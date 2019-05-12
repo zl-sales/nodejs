@@ -1,0 +1,130 @@
+{{extend '../../layouts/layout.html'}}
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>分类目录</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+    <strong>错误！</strong>发生XXX错误
+  </div> -->
+  <div class="row">
+
+    <div class="col-md-8">
+      <div class="page-action">
+        <!-- show when multiple checked -->
+        <a class="btn btn-danger btn-sm" href="javascript:;" >批量删除</a>
+      </div>
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th class="text-center" width="40"><input type="checkbox"></th>
+            <th>栏目名称</th>
+            <th>栏目图标</th>
+            <th>创建时间</th>
+            <th class="text-center" width="100">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{{/block}}
+
+
+
+{{block 'js'}}
+<script src="/assets/vendors/layer-v3.1.0/layer/layer.js"></script>
+
+<script type="text/html" id="txt">
+  {# each data #}
+  <tr>
+      <td class="text-center"><input type="checkbox"></td>
+      <td>{#$value.cate_name#}</td>
+      <td>{#$value.cate_icon#}</td>
+      <td>{#$value.cate_addtime#}</td>
+      <td class="text-center">
+        <a href="/admin/cate/editcate?id={#$value.cate_id#}" class="btn btn-info btn-xs edit" >编辑</a>
+        <a href="javascript:;" data='{#$value.cate_id#}' class="btn btn-danger del btn-xs">删除</a>
+      </td>
+    </tr>
+  {#/each#} 
+</script>
+<script>
+// /admin/cate/editcate?cate_id={#$value.cate_id#}
+// 模板引擎核心点： 在cate.html页面中重新定义模板的边界符       使用该语句修改  将template定义的边界符转化为{# #}
+  template.defaults.rules[1].test = /{#([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*#}/;
+  $.ajax({
+    url:'/admin/cate/getCate',
+    type:'get',
+    dataType:'json',
+    cache:false,
+    success:function(msg){
+      console.log(msg)
+      var str = template('txt',msg)
+       console.log(str)
+      $('tbody').html(str)
+     
+    }
+  })
+
+
+  $('tbody').on('click','.del',function (){
+    if(!confirm('确定删除当前行吗？')){
+      return false;
+    }
+    var data = $(this).attr('data')
+    console.log(data)
+    $.ajax({
+      url:'/admin/cate/dele',
+      type:'get',
+      data:{id:data},
+      // dataType:'json',
+      success:function (msg){
+        console.log(msg)
+        if(msg.code==200){
+          alert(msg.message)
+        }else{
+          alert(msg.message);
+          location.reload();
+        }
+      }
+    })
+  })
+
+
+  // $('#edit').on('click', function () {
+  //   console.log(1111)
+  //   layer.ready(function () {
+  //       layer.open({
+  //         type: 2,
+  //         title: '修改栏目',
+  //         anim: 2,
+  //         skin: 'demo-class',
+  //         maxmin: true,
+  //         area: ['800px', '500px'],
+  //         content: '/admin/cate/editcate',
+  //       });
+  //     });
+  // })
+
+  $('.edit').click( function () {
+    console.log(111)
+    layer.ready(function () {
+        layer.open({
+          type: 2,
+          title: '修改栏目',
+          anim: 2,
+          maxmin: true,
+          area: ['800px', '500px'],
+          content: '/admin/cate/editcate'
+        });
+      });
+  })
+</script>
+
+{{/block}}

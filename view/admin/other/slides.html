@@ -1,0 +1,162 @@
+{{extend '../../layouts/layout.html'}}
+
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>图片轮播</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+      <strong>错误！</strong>发生XXX错误
+    </div> -->
+  <div class="row">
+    <div class="col-md-4">
+      <form id="addslides">
+        <h2>添加新轮播内容</h2>
+        <div class="form-group">
+          <label for="image">图片</label>
+          <!-- show when image chose -->
+          <img class="help-block thumbnail" style="display: none">
+          <input type="hidden" name='image_hidden' id="image_hidden">
+          <input id="image" class="form-control" name="image" type="file">
+        </div>
+        <div class="form-group">
+          <label for="text">文本</label>
+          <input id="text" class="form-control" name="text" type="text" placeholder="文本">
+        </div>
+        <div class="form-group">
+          <label for="link">链接</label>
+          <input id="link" class="form-control" name="link" type="text" placeholder="链接">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" type="submit">添加</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-8">
+      <div class="page-action">
+        <!-- show when multiple checked -->
+        <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+      </div>
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th class="text-center" width="40"><input type="checkbox"></th>
+            <th class="text-center">图片</th>
+            <th>文本</th>
+            <th>链接</th>
+            <th class="text-center" width="100">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{{/block}}
+
+{{block 'js'}}
+
+<!-- 模板1 -->
+<script type="text/html" id="txt">
+{#each data#}
+  <tr>
+    <td class="text-center"><input type="checkbox"></td>
+    <td class="text-center"><img class="slide" src="{#$value.pic_url#}"></td>
+    <td>{#$value.pic_text#}</td>
+    <td>{#$value.pic_link#}</td>
+    <td class="text-center">
+      <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+    </td>
+  </tr>
+{#/each#}
+
+
+</script>
+<!-- 模板2  -->
+<script type="text/html" id="content">
+  <tr>
+      <td class="text-center"><input type="checkbox"></td>
+      <td class="text-center"><img class="slide" src="{#data.pic_url#}"></td>
+      <td>{#data.pic_text#}</td>
+      <td>{#data.pic_link#}</td>
+      <td class="text-center">
+        <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+      </td>
+    </tr>
+</script>
+
+
+<script>
+  template.defaults.rules[1].test = /{#([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*#}/;
+
+  // 前车之鉴
+  // $('#image').change(function (){
+  //   var file = this.files[0]
+  //   var fd = new FormData()
+  //   fd.append('avatar',file)
+  //   console.log(fd);
+  //   $.ajax({
+  //     url:'/api/upload',
+  //     type:'post',
+  //     data:fd,
+  //     dataType:'json',
+  //     success:function (msg){
+  //       // $('.help-block').attr('src', msg.path).show()
+  //       // $('#image_hidden').val(msg.path)
+  //       console.log(msg)
+  //     }
+  //   })
+  // })
+
+  $('.btn-primary').click(function () {
+    $.ajax({
+      url: '/admin/other/addSildes',
+      type: 'post',
+      data: $('#addslides').serialize(),
+      dataType: 'json',
+      success: function (msg) {
+        console.log(msg.data)
+      }
+    })
+  })
+
+  $.ajax({
+    url: '/api/other/slides',
+    type: 'post',
+    dataType: 'json',
+    success: function (msg) {
+      console.log(msg)
+      var str = template('txt', msg)
+      $('tbody').html(str)
+    }
+  })
+
+  $('#image').change(function () {
+    console.log(111)
+    var file = this.files[0]
+    var fd = new FormData();
+    fd.append('avatar', file)
+    $.ajax({
+      url: '/api/upload',
+      type: 'post',
+      data: fd,
+      dataType: 'json',
+
+      // 切记发送的数据如果是formdata一定要写这俩句话
+      contentType: false,
+      processData: false,
+      success: function (msg) {
+        console.log(msg.path)
+        $('.help-block').attr('src', msg.path).show()
+        $('#image_hidden').val(msg.path)
+      }
+    })
+  })
+</script>
+
+
+{{/block}}

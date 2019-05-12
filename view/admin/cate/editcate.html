@@ -1,0 +1,58 @@
+{{extend '../../layouts/layout.html'}}
+
+
+{{block 'body'}}
+<div class="container-fluid">
+      <div class="page-title">
+        <h1>编辑栏目信息</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <div class="row">
+        <div class="col-md-4">
+          <form id="mainForm">
+            <h2>修改栏目</h2>
+            {{if code==201}}
+              <a href="/admin/cate/cate">{{message}}</a>
+            {{/if}}
+            <input type="hidden" name="id" value="{{cate_id}}">
+            <div class="form-group">
+              <label for="name">名称</label>
+              <input id="name" class="form-control" name="name" type="text" placeholder="分类名称" value="{{cate_name}}">
+            </div>
+            <div class="form-group">
+              <label for="icon">图标</label>
+              <input id="icon" class="form-control" name="icon" type="text" placeholder="图标" value="{{cate_icon}}">
+            </div>
+            <div class="form-group">
+              <button id="editBtn" class="btn btn-primary" type="button">保存修改</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+{{/block}}
+
+{{block 'js'}}
+<script type="text/javascript">
+//获取修改按钮，注册点击事件
+$('#editBtn').on('click',function(){
+  $.ajax({
+    url:'/admin/cate/modifycate',
+    type:'post',
+    data:$('#mainForm').serialize(),
+    success:function(msg){
+      if(msg.code==200){
+        alert(msg.message)
+      }else{
+        alert(msg.message)
+        location.href = '/admin/cate/cate'
+      }
+    }
+    })
+})
+</script>
+{{/block}}

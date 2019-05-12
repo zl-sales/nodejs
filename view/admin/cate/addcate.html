@@ -1,0 +1,61 @@
+{{extend '../../layouts/layout.html'}}
+
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>添加栏目</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+    <strong>错误！</strong>发生XXX错误
+  </div> -->
+  <div class="row">
+    <div class="col-md-4">
+      <form id="fdata">
+        <h2>添加新栏目</h2>
+        <div class="form-group">
+          <label for="name">名称</label>
+          <input id="name" class="form-control" name="name" type="text" placeholder="分类名称">
+        </div>
+        <div class="form-group">
+          <label for="icon">图标</label>
+          <input id="icon" class="form-control" name="icon" type="text" placeholder="图标">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" type="botton" id="btn">添加</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{{/block}}
+
+{{block 'js'}}
+
+<script>
+  var len1 = $('.form-contro').val();
+  var len2 = $('.form-control').val();
+  $('#btn').on('click', function () {
+
+      $.ajax({
+        url: '/admin/cate/addCateDeal',
+        type: 'post',
+        data: $('#fdata').serialize(),
+        dataType: 'json',
+        success: function (msg) {
+          console.log(msg.code)
+          // alert(msg.code)
+          if (msg.code == 200) {
+            location.href = '/admin/cate/cate'
+          }
+        }
+      })
+    
+    // console.log($('#fdata').serialize())
+  })
+
+
+</script>
+
+{{/block}}

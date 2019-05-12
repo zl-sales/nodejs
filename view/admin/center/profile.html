@@ -1,0 +1,130 @@
+{{extend '../../layouts/layout.html'}}
+
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>我的个人资料</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+      <strong>错误！</strong>发生XXX错误
+    </div> -->
+  <form class="form-horizontal">
+
+
+  </form>
+</div>
+{{/block}}
+
+{{block 'js'}}
+<script type="text/html" id="txt">
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">头像</label>
+        <div class="col-sm-6">
+          <label class="form-image">
+            <input id="avatar" type="file">
+            <input id="avatar_hidden" type="hidden" value="{#admin_pic#}" name="pic">
+            <img id="avatar_file" src="{#admin_pic#}">
+            <i class="mask fa fa-upload"></i>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email" class="col-sm-3 control-label">邮箱</label>
+        <div class="col-sm-6">
+          <input id="email" class="form-control" name="email" type="type" value="{#admin_email#}" placeholder="邮箱" readonly>
+          <p class="help-block">登录邮箱不允许修改</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tel" class="col-sm-3 control-label">手机号</label>
+        <div class="col-sm-6">
+          <input id="tel" class="form-control" name="admin_tel" type="type" value="{#admin_tel#}" placeholder="tel">
+          <p class="help-block">请输入11位正确手机号<strong></strong></p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="nickname" class="col-sm-3 control-label">昵称</label>
+        <div class="col-sm-6">
+          <input id="nickname" class="form-control" name="nickname" type="type" value="{#admin_nickname#}" placeholder="昵称">
+          <p class="help-block">限制在 2-16 个字符</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bio" class="col-sm-3 control-label">简介</label>
+        <div class="col-sm-6">
+          <textarea id="bio" class="form-control" placeholder="Bio" cols="30" rows="6" name="sign">{#admin_sign#}</textarea>
+        </div>
+      </div>
+      <div class="form-group" id="dian">
+        <div class="col-sm-offset-3 col-sm-6">
+          <button type="button" class="btn btn-primary">更新</button>
+          <a class="btn btn-link" href="/admin/center/password-reset">修改密码</a>
+        </div>
+      </div>
+  
+  </script>
+
+
+
+
+
+<script>
+
+  template.defaults.rules[1].test = /{#([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*#}/;
+  $.ajax({
+    url: ' /api/center/getAdminById',    // url:'/admin/center/profile',
+    type: 'post',
+    dataType: 'json',
+    success: function (msg) {
+      console.log(msg.list)
+      var str = template('txt', msg.list)
+      $('.form-horizontal').html(str)
+    }
+
+  })
+
+  $('.container-fluid').on('click','.btn-primary',function () {
+    console.log($('.form-horizontal').serialize())
+    $.ajax({
+      url:'/api/center/personal',
+      type:'post',
+      data:$('.form-horizontal').serialize(),
+      dataType:'json',
+      success:function (msg){
+        console.log(msg)
+        if(msg.code==200){
+          alert(msg.message)
+          location.href = '/admin/user/users'
+        }
+      }
+    })
+  })
+
+
+  $('.container-fluid').on('change', '#avatar', function () {
+    var file = this.files[0]
+    console.log(file)
+
+    var fd = new FormData();
+
+    fd.append('avatar', file)
+    console.log(fd)
+    $.ajax({
+      url: '/api/upload',
+      data: fd ,
+      type: 'post',
+      dataType: 'json',
+      contentType: false,
+      processData: false,
+      success: function (msg) {
+        console.log(msg)
+        $('#avatar_file').attr({src: msg.path, title:'来我们试试'})
+        $('#avatar_hidden').val(msg.path)
+      }
+    })
+  })
+</script>
+{{/block}}

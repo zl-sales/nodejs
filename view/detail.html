@@ -1,0 +1,48 @@
+{{extend './layouts/layoutindex.html'}}
+
+{{block 'body'}}
+<div class="content">
+  <div class="article">
+   
+      <input type="hidden" id="id" name="id" value="{{id}}">
+      <div class="breadcrumb">
+          <dl>
+            <dt>当前位置：</dt>
+            <dd><a href="/list?id={{article.cate_id}}">{{article.cate_name}}</a></dd>
+            <dd>{{article.article_title}}</dd>
+          </dl>
+        </div>
+        <h2 class="title">
+          <a href="javascript:;">{{article.article_title}}</a>
+        </h2>
+        
+        <div class="meta">
+          <span>{{article.admin_nickname}} 发布于 {{article.article_addtime}}</span>
+          <span>分类: <a href="javascript:;">{{article.cate_name}}</a></span>
+          <span>阅读: ({{article.article_click}})</span>
+          <span>评论: {{article.article_good}}</span>
+        </div>
+        <div>
+            {{@article.article_text}}
+        </div>
+
+  </div>
+  <div class="panel hots">
+    <h3>热门推荐</h3>
+    <ul>
+      {{each tuijian}}
+      <li>
+        <a href="javascript:;">
+          <img src="{{$value.article_file}}" alt="">
+          <span>{{$value.article_title}}</span>
+        </a>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
+{{/block}}
+
+{{block 'js'}}
+
+{{/block}}

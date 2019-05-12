@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>Users &laquo; Admin</title>
+  <link rel="stylesheet" href="/assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/assets/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/assets/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script src="/assets/vendors/nprogress/nprogress.js"></script>
+</head>
+
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="main">
+    <nav class="navbar">
+      <button class="btn btn-default navbar-btn fa fa-bars"></button>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/admin/center/profile"><i class="fa fa-user"></i>个人中心</a></li>
+        <li><a href="javascript:;" class="out"><i class="fa fa-sign-out"></i>退出</a></li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="page-title">
+        <h1>用户</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <div class="row">
+
+        <div class="col-md-8">
+          <div class="page-action">
+            <!-- show when multiple checked -->
+            <a class="btn btn-success btn-sm adduser" href="javascript:;">添加新用户</a>
+            <a class="btn btn-danger btn-sm shanchu" href="javascript:;">批量删除</a>
+          </div>
+          <table class="table table-striped table-bordered table-hover">
+            <thead>
+              <tr>
+                <th class="text-center" width="40"><input type="checkbox"></th>
+                <th class="text-center" width="80">头像</th>
+                <th>邮箱</th>
+                <th>昵称</th>
+                <th>手机号</th>
+                <th class="text-center" width="100">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+
+
+              {{each list}}
+              <tr>
+                <td class="text-center"><input type="checkbox" id="he" value={{$value.admin_id}}></td>
+                <td class="text-center"><img class="avatar" src="{{$value.admin_pic}}"></td>
+                <td>{{$value.admin_email}}</td>
+                <td>{{$value.admin_nickname}}</td>
+                <td>{{$value.admin_tel}}</td>
+                <td class="text-center">
+                  <a href="javascript:;" id={{$value.admin_id}} class="btn btn-info btn-xs edit">编辑</a>
+                  <a href="javascript:;" id={{$value.admin_id}} class="btn btn-danger btn-xs del">删除</a>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="aside">
+    <div class="profile">
+      <!-- {#each#} -->
+      <img class="avatar" src="{{user.admin_pic}}">
+      <h3 class="name">{{user.admin_nickname}}</h3>
+      <!-- {#/each#} -->
+    </div>
+    <ul class="nav">
+      <li>
+        <a href="/admin/index"><i class="fa fa-dashboard"></i>仪表盘</a>
+      </li>
+      <li class="active">
+        <a href="#menu-posts" data-toggle="collapse">
+          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-posts" class="collapse in">
+          <li><a href="/admin/post/posts">所有文章</a></li>
+          <li><a href="/admin/post/addpost">写文章</a></li>
+          <li class="active"><a href="/admin/cate/cate">分类目录</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="/admin/comment/comments"><i class="fa fa-comments"></i>评论</a>
+      </li>
+      <li>
+        <a href="/admin/user/users"><i class="fa fa-users"></i>用户</a>
+      </li>
+      <li>
+        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-settings" class="collapse">
+          <li><a href="/admin/other/nav-menus">导航菜单</a></li>
+          <li><a href="/admin/other/slides">图片轮播</a></li>
+          <li><a href="/admin/other/settings">网站设置</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <script src="/assets/vendors/jquery/jquery.js"></script>
+  <script src="/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/assets/vendors/layer-v3.1.0/layer/layer.js"></script>
+  <script>NProgress.done()</script>
+  <script>
+    $.ajax({
+      url: '/admin/user/users',
+      type: 'get',
+      dataType: 'json',
+      success: function (msg) {
+        console.log(msg.list);
+      }
+    })
+
+    $('.adduser').on('click', function () {
+      layer.ready(function () {
+        layer.open({
+          type: 2,
+          title: '添加新用户',
+          anim: 2,
+          skin: 'demo-class',
+          maxmin: true,
+          area: ['800px', '500px'],
+          content: '/admin/user/adduser',
+        });
+      });
+    })
+
+    $('.del').on('click', function () {
+      var id = $(this).attr('id')
+
+      if (confirm('确定删除吗？')) {
+        $.ajax({
+          url: '/admin/user/deleteuser',
+          type: 'get',
+          data: { id: id },
+          dataType: 'json',
+          success: function (msg) {
+            console.log(msg)
+            if (msg.code == 200) {
+              alert(msg.message)
+            } else {
+              alert(msg.message)
+              location.reload();
+            }
+          }
+        })
+      }
+
+    })
+
+  $('.edit').on('click', function () {
+    var id = $(this).attr('id');
+    console.log(id)
+    layer.ready(function () {
+        layer.open({
+          type: 2,
+          title: '修改栏目',
+          anim: 2,
+          maxmin: true,
+          area: ['800px', '500px'],
+          content: '/admin/user/edituser?id='+ id
+        });
+      });
+  })
+
+
+
+  $('.shanchu').click(function () {
+    if(!confirm('确认删除吗')){
+      return false;
+    }
+
+    var checkbox = $('#he:checked');
+    console.log(checkbox)
+      // 创建一个空字符串用于拼接获取到的checkbox的value值
+    var str= '';
+
+
+    checkbox.each( function (index, item) {
+      str += item.value + ','
+    })
+    str = str.slice(0,str.length-1)
+    console.log(str)
+    $.ajax({
+      url:' /admin/user/delusers',
+      type:'post',
+      data:{id:str},
+      dataType:'json',
+      success:function(msg){
+        console.log(msg)
+        if(msg.code==200){
+          alert(msg.message)
+        }else{
+          alert(msg.message)
+          checkbox.each(function (){
+            $(this).parent().parent().remove()
+          })
+
+        }
+      }
+    })
+  })
+
+  $('.out').click(function (){
+    if(!confirm('确定退出吗')){
+      return false;
+    }
+    $.ajax({
+      url:'/api/login/logout',
+      type:'post',
+      dataType:'json',
+      success: function (msg) {
+        console.log(msg)
+        
+        if(msg.code==200){
+          alert(msg.message)
+          location.href = '/admin/login'
+        }
+      }
+    })
+  })
+  </script>
+</body>
+
+</html>

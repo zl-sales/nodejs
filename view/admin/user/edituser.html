@@ -1,0 +1,91 @@
+<link rel="stylesheet" href="/assets/vendors/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href="/assets/vendors/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="/assets/vendors/nprogress/nprogress.css">
+<link rel="stylesheet" href="/assets/css/admin.css">
+<script src="/assets/vendors/nprogress/nprogress.js"></script>
+
+<!-- 有错误信息时展示 -->
+<!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+
+<form style="padding:20px;overflow-x: hidden;" id="editform">
+  <h2>修改用户信息</h2>
+
+
+  {{each list}}
+  <div class="form-group">
+      <label for="id">id</label>
+      <input id="id" class="form-control" name="id" type="text"  value="{{$value.admin_id}}" readonly>
+    </div>
+  <div class="form-group">
+    <label for="email">邮箱</label>
+    <input id="email" class="form-control" name="email" type="email" placeholder="邮箱" value="{{$value.admin_email}}">
+  </div>
+  <div class="form-group">
+    <label for="nickname">昵称</label>
+    <input id="nickname" class="form-control" name="nickname" type="text" placeholder="昵称"
+      value="{{$value.admin_nickname}}">
+  </div>
+  <div class="form-group">
+    <label for="nickname">头像</label>
+    <select name="pic" id="">
+      <option value="/upload/1.jpg" {{if $value.admin_pic=="/upload/1.jpg"}} selected {{/if}}>头像1</option>
+      <option value="/upload/2.jpg" {{if $value.admin_pic=="/upload/2.jpg"}} selected {{/if}}>头像2</option>
+      <option value="/upload/3.jpg" {{if $value.admin_pic=="/upload/3.jpg"}} selected {{/if}}>头像3</option>
+      <option value="/upload/4.jpg" {{if $value.admin_pic=="/upload/4.jpg"}} selected {{/if}}>头像4</option>
+      <option value="/upload/5.jpg" {{if $value.admin_pic=="/upload/5.jpg"}} selected {{/if}}>头像5</option>
+      <option value="/upload/6.jpg" {{if $value.admin_pic=="/upload/6.jpg"}} selected {{/if}}>头像6</option>
+      <option value="/upload/7.jpg" {{if $value.admin_pic=="/upload/7.jpg"}} selected {{/if}}>头像7</option>
+    </select>
+    <img src="{{$value.admin_pic}}" width="60">
+  </div>
+  <div class="form-group">
+    <label for="tel">手机号</label>
+    <input id="tel" class="form-control" name="tel" type="text" placeholder="手机号" value="{{$value.admin_tel}}">
+  </div>
+  <div class="form-group">
+    <label for="password">密码</label>
+    <input id="password" class="form-control" name="pwd" type="text" placeholder="密码" value="{{$value.admin_pwd}}">
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary edit" type="submit">修改</button>
+  </div>
+  {{/each}}
+</form>
+
+
+<script src="/assets/vendors/jquery/jquery.js"></script>
+<script src="/assets/vendors/bootstrap/js/bootstrap.js"></script>
+<script>NProgress.done()</script>
+<script>
+  $('select').on('change', function () {
+    var tu1 = $(this).val();
+    console.log(tu1)
+    $('img').attr('src', tu1)
+  })
+
+  $('.edit').click(function () {
+    console.log($('#editform').serialize())
+    $.ajax({
+      url: '/admin/user/edit',
+      type: 'post',
+      data: $('#editform').serialize(),
+      dataType: 'json',
+      success: function (msg) {
+        console.log(msg)
+        if (msg.code == 200) {
+          alert(msg.message)
+        } else {
+          alert(msg.message)
+          var index = parent.layer.getFrameIndex(window.name);
+          parent.layer.close(index);
+          parent.location.reload();
+        }
+      }
+    })
+  })
+
+
+
+</script>
